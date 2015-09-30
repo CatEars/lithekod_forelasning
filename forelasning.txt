@@ -1,0 +1,149 @@
+1) Vem är jag?
+Henrik, U3
+Tävlingsprogrammerat sen slutet av gymnasiet
+Var med i LiU:s bästa lag i NCPC 2014 och NWERC 2014
+Tävlar regelbundet i IMPA
+
+2) Kort avvikare: Vad är Kattis, IMPA, Uva?
+IMPA: Lokal tävlingsprogrammingstävling, Lithe Kod + Fredrik Heintz ansvariga.
+Kattis & UVa: Online Domare. System för att automatiskt rätta program, mot en viss beskrivning.
+Kattis: Svenskt (men används inte bara utav svenskar), används av LiU I bland annat DALP kursen
+UVa: Mer internationellt, äldre. Används i IMPA
+
+Kattis har ni redan inloggning till (genom liuid)
+UVa måste ni skapa konto.
+
+3) Varför kan tävlingsprogrammering vara användbart?
+-> Lär dig syntaxen av ett språk
+Vanligtvis som nybörjare så är syntaxen det svåraste.
+Ju bättre man blir desto mer handlar det om att skriva "bättre"/"smartare" program.
+För de som vill snabba på den processen är tävlingsprogrammering bra mängdträning.
+
+-> Computational thinking
+Känsla för vad som är rimligt att räkna ut/vad som inte är rimligt.
+
+Exempel:
+Sortera en lista med N heltal.
+Ungefär när börjar det bli orimligt att sortera listan på under en sekund?
+
+-> Roligt =)
+Problemlösning med datorer. Problem och datorer, whats not to like?
+
+-> Pengar och Ära
+IMPA, avslutningsträff brukar Ericsson, Opera, Ida Infront etc. närvara och tala om hur de behöver duktiga programmerare.
+
+4) Vad är dynamisk programmering?
+Offra minne för snabbhet!
+[rita upp ett binärt sökträd med djup 3]
+Problem där du kan använda "sublösningar" för att lösa ett problem med givna parametrar.
+Detta kallas för optimal substruktur.
+
+Exempel:
+Fibonnaci serien
+f(1) = 1
+f(2) = 1
+f(x) = f(x-1) + f(x-2)
+Anta att vi ska lösa fibonnaci för x=13
+[visa sökträd]
+I sökträden finns en massa redundans. f(11) räknas ut två gånger etc.
+Vi har en lista, fib, med alla lösningar för fibonnaci [1, 12]
+
+Svar:
+f(13) = fib[12] + fib[11]
+
+Bottom-Up :: Tabell
+Top-Down  :: Rekursion + Memoization
+
+I fibonnaci problemet så såg vi faktiskt båda två. 
+Bottom-Up: tabell för fibonnaci, lös de "tidigare" statsen och jobba uppåt
+Top-Down: uttryck problemet rekursivt + kom ihåg lösning, wrappa med memoization
+
+def f(x):
+	if x in memo:
+		return memo[x]
+	.
+	.
+	.
+	.
+	memo[x] = the_answer
+	return memo[x]
+
+så vanligt mönster att py3 har det i standardbibliotek som functools.lru_cache (fast kan ge storlek på cachen, om man vill)
+
+
+
+
+
+5) Känt problem: 0-1 Knapsack
+https://liu.kattis.com/problems/knapsack - Knapsack
+
+Du har en säck som kan hålla en vikt utav C.
+Du har ett antal saker med vikt V och värde K.
+Vad är det maximala värdet du kan ta med dig?
+
+Hur uttrycker vi Knapsack på bästa sätt för att kunna göra DP utav det?
+
+Om vi väljer en sak med vikt a och värde b så kommer vi behöva lösa samma problem fast med en säck
+utav storlek C - a, utan att kunna välja det vi valde! Subproblem!
+
+def f(i, w): i=använd bara de i första sakerna, w=använd bara kapacitet på w
+
+Tabell:
+[Rita upp tabell över i och w]
+Beroendena för denna ruta är ju dessa rutor
+Alltså är det rimligt att loopa först över kolonn och sedan rad och välja max utav f(i-1, w) och f(i-1, w-p[i]) + v[i]
+
+Rekursion:
+f(i<0, w) = 0 (anropas utav i==0, alltså ska vi sluta)
+f(i, 0) = 0 (varje vikt bör vara > 0)
+f(i, w<0) = -inf (Vi har valt för mycket för att få plats)
+
+f(i, w) = max(f(i-1, w), f(i-1, w - Vikt[i]) + Pris[i])
+
+
+6) Känt problem: Longest Increasing Subsequence
+https://liu.kattis.com/problems/longincsubseq - lis
+
+Du har en sekvens utav tal. Din uppgift är att välja tal så att de
+strikt stiger (inte lika med) och är så lång så möjligt.
+
+Exempel: 1 2 3 3 5 4 6
+
+Hur uttrycker vi LIS på bästa sätt för att kunna göra DP utav det?
+
+Anta att vi har talet 1. Vad är LIS för den?
+Anta att vi har talen 1 2. Vad är LIS?
+Anta att vi har talen 1 2 3 3. Vad är LIS?
+Om vi tvunget skulle välja sista trean. Vad skulle den göra LIS med? LIS[2].
+LIS[i] = bästa tidigare LIS, eller ta med nuvarande och välj bästa tidigare LIS så att
+det högsta talet i den LIS:en är mindre en nuvarande tal
+
+LIS[i] = bästa LÄNGDEN utav bästa lis
+NUM[i] = HÖGSTA talet utav LIS[i]
+
+tabell:
+[rita upp tabell (nx1)]
+[rita upp NUM[i]]
+[fyll i med stigande grad]
+
+rekursion:
+I varje steg, loopa över varje tidigare index. Spara hela tiden bästa LIS
+som antingen är bästa tidigare LIS:en eller bästa tidigare LIS:en där det nuvarande talet kan inkluderas.
+
+
+7) NWERC 2014 - Cent Savings
+https://liu.kattis.com/problems/centsavings
+
+Du är och handlar och har "d" stycken avgränsare. Varje grupp som du skapar betalar du var för sig.
+Du rundar av till närmsta 10-tal. ex: 94 --> 90 (spara 4) 95 --> 100 (slösa 5)
+om du har "n" stycken saker som ligger på bältet med givet pris, hur ska du lägga ut avgränsarna?
+
+Hur uttrycker vi det här på bästa sätt för att kunna göra DP utav det?
+
+Vi skapar en funktion C(i, k) som returnerar värdet av att dela in de första "i" varorna i "k" st grupper (och betala för dessa).
+C(0, k) = 0
+C(i, 0) = round(sum(values[:i]))
+C(i, k) = min( C(m, k-1) + round( sum(values[m:i]) ) for all m in range(i) )
+
+kommentar ifrån domarna: föruträkna varje summa innan för att snabba upp uträkningarna.
+
